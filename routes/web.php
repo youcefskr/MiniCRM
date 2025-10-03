@@ -12,8 +12,30 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/users', [RolePermissionController::class, 'index'])->name('users.index');
+    Route::get('/roles', [RolePermissionController::class, 'index'])->name('roles.index');
+
+    // 👇 Routes pour les formulaires
+   // Gestion des rôles
+    Route::post('/roles', [RolePermissionController::class, 'storeRole'])
+        ->name('roles.store');
+    
+    Route::put('/roles/{role}', [RolePermissionController::class, 'updateRole'])
+        ->name('roles.update');
+    
+    Route::delete('roles/{role}', [RolePermissionController::class, 'destroyRole'])
+        ->name('roles.destroy'); // Le nom réel devient 'admin.roles.destroy'
+    
+    // Gestion des permissions
+    Route::post('/permissions', [RolePermissionController::class, 'storePermission'])
+        ->name('permissions.store');
+    
+    Route::put('/permissions/{permission}', [RolePermissionController::class, 'updatePermission'])
+        ->name('admin.permissions.update');
+    
+    Route::delete('/permissions/{permission}', [RolePermissionController::class, 'destroyPermission'])
+        ->name('permissions.destroy');
 });
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -32,5 +54,6 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 });
+
 
 require __DIR__.'/auth.php';

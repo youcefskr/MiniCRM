@@ -26,8 +26,8 @@
 @can('manage role and permissions')
 <flux:navlist.item 
     icon="users" 
-    :href="route('admin.users.index')" 
-    :current="request()->routeIs('admin.users.*')" 
+    :href="route('admin.roles.index')" 
+    :current="request()->routeIs('admin.roles.*')" 
     wire:navigate
 >
     {{ __('rôles et permissions') }}

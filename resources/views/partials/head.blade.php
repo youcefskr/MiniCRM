@@ -3,12 +3,16 @@
 
 <title>{{ $title ?? config('app.name') }}</title>
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- Alpine.js - Déplacer en haut -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
+
+<!-- Ajouter après les autres styles -->
+<style>
+    [x-cloak] { display: none !important; }
+</style>
