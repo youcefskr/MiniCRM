@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
-
+use App\Http\Controllers\RolePermissionController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -11,7 +11,9 @@ Route::get('/', function () {
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
-
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users', [RolePermissionController::class, 'index'])->name('users.index');
+});
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
