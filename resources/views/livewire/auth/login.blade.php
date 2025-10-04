@@ -24,8 +24,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     /**
      * Handle an incoming authentication request.
+     *
+     * @return \Illuminate\Http\RedirectResponse|void
      */
-    public function login(): void
+    public function login()
     {
         $this->validate();
 
@@ -39,9 +41,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 'login.remember' => $this->remember,
             ]);
 
-            $this->redirect(route('two-factor.login'), navigate: true);
-
-            return;
+            return redirect()->route('two-factor.login');
         }
 
         Auth::login($user, $this->remember);
@@ -49,7 +49,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
