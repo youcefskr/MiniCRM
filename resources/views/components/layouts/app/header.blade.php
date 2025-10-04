@@ -107,14 +107,16 @@
             {{ __('Dashboard') }}
         </flux:navlist.item>
 
+        @can('manage users')
         <flux:navlist.item 
-            icon="users" 
+            icon="user-group" 
             :href="route('admin.users.index')" 
             :current="request()->routeIs('admin.users.*')" 
             wire:navigate
         >
-            {{ __('Users') }}
+            {{ __('Gestion des utilisateurs') }}
         </flux:navlist.item>
+        @endcan
     </flux:navlist.group>
 </flux:navlist>
 

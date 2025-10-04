@@ -32,6 +32,16 @@
     {{ __('rôles et permissions') }}
 </flux:navlist.item>
 @endcan
+ @can('manage users')
+        <flux:navlist.item 
+            icon="user-group" 
+            :href="route('admin.users.index')" 
+            :current="request()->routeIs('admin.users.*')" 
+            wire:navigate
+        >
+            {{ __('Gestion des utilisateurs') }}
+        </flux:navlist.item>
+        @endcan
 
     </flux:navlist.group>
 </flux:navlist>
