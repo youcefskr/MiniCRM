@@ -22,17 +22,18 @@
             {{ __('Dashboard') }}
         </flux:navlist.item>
 
-       @can('manage role and permissions')
-<flux:navlist.item 
-    icon="users" 
-    :href="route('admin.roles.index')" 
-    :current="request()->routeIs('admin.roles.*')" 
-    wire:navigate
->
-    {{ __('rôles et permissions') }}
-</flux:navlist.item>
-@endcan
- @can('manage users')
+        @can('manage role and permissions')
+        <flux:navlist.item 
+            icon="users" 
+            :href="route('admin.roles.index')" 
+            :current="request()->routeIs('admin.roles.*')" 
+            wire:navigate
+        >
+            {{ __('rôles et permissions') }}
+        </flux:navlist.item>
+        @endcan
+
+        @can('manage users')
         <flux:navlist.item 
             icon="user-group" 
             :href="route('admin.users.index')" 
@@ -43,6 +44,15 @@
         </flux:navlist.item>
         @endcan
 
+        <!-- Ajout du menu Contacts -->
+        <flux:navlist.item 
+            icon="identification" 
+            :href="route('contacts.index')" 
+            :current="request()->routeIs('contacts.*')" 
+            wire:navigate
+        >
+            {{ __('Gestion des contacts') }}
+        </flux:navlist.item>
     </flux:navlist.group>
 </flux:navlist>
 
