@@ -64,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 
     // Routes pour les contacts
+    Route::get('/contacts/information', [ContactController::class, 'information'])
+        ->name('contacts.information');
     Route::resource('contacts', ContactController::class);
 });
 

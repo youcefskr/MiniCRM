@@ -5,58 +5,81 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
-
-            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
-                <x-app-logo />
-            </a>
-
             <flux:navlist variant="outline">
-    <flux:navlist.group :heading="__('Platform')" class="grid">
-        <flux:navlist.item 
-            icon="home" 
-            :href="route('dashboard')" 
-            :current="request()->routeIs('dashboard')" 
-            wire:navigate
-        >
-            {{ __('Dashboard') }}
-        </flux:navlist.item>
+                <flux:navlist.group :heading="__('Platform')" class="grid">
+                    @if(auth()->check())
+                        <flux:navlist.item 
+                            icon="home" 
+                            :href="route('dashboard')" 
+                            :current="request()->routeIs('dashboard')" 
+                            wire:navigate
+                        >
+                            {{ __('Dashboard') }}
+                        </flux:navlist.item>
 
-        @can('manage role and permissions')
-        <flux:navlist.item 
-            icon="users" 
-            :href="route('admin.roles.index')" 
-            :current="request()->routeIs('admin.roles.*')" 
-            wire:navigate
-        >
-            {{ __('rôles et permissions') }}
-        </flux:navlist.item>
-        @endcan
+                        @can('manage role and permissions')
+                            <flux:navlist.item 
+                                icon="users" 
+                                :href="route('admin.roles.index')" 
+                                :current="request()->routeIs('admin.roles.*')" 
+                                wire:navigate
+                            >
+                                {{ __('rôles et permissions') }}
+                            </flux:navlist.item>
+                        @endcan
 
-        @can('manage users')
-        <flux:navlist.item 
-            icon="user-group" 
-            :href="route('admin.users.index')" 
-            :current="request()->routeIs('admin.users.*')" 
-            wire:navigate
-        >
-            {{ __('Gestion des utilisateurs') }}
-        </flux:navlist.item>
-        @endcan
+                        @can('manage users')
+                            <flux:navlist.item 
+                                icon="user-group" 
+                                :href="route('admin.users.index')" 
+                                :current="request()->routeIs('admin.users.*')" 
+                                wire:navigate
+                            >
+                                {{ __('Gestion des utilisateurs') }}
+                            </flux:navlist.item>
+                        @endcan
 
-        <!-- Ajout du menu Contacts -->
-        <flux:navlist.item 
-            icon="identification" 
-            :href="route('contacts.index')" 
-            :current="request()->routeIs('contacts.*')" 
-            wire:navigate
-        >
-            {{ __('Gestion des contacts') }}
-        </flux:navlist.item>
-    </flux:navlist.group>
-</flux:navlist>
+                        <flux:navlist.group x-data="{ open: false }" class="relative">
+                            <flux:navlist.item 
+                                @click="open = !open"
+                                icon="identification" 
+                                class="cursor-pointer"
+                            >
+                                <div class="flex items-center justify-between w-full">
+                                    {{ __('Gestion des contacts') }}
+                                    <svg 
+                                        class="w-4 h-4 transition-transform"
+                                        :class="{ 'rotate-180': open }"
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </flux:navlist.item>
 
-<flux:spacer />
+                            <div 
+                                x-show="open" 
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                x-transition:enter-end="opacity-100 transform translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 transform translate-y-0"
+                                x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                class="pl-8 space-y-1"
+                            >
+                                <!-- Sous-menus des contacts -->
+                                @include('components.layouts.app.sub-menus.contact-menu-items')
+                            </div>
+                        </flux:navlist.group>
+                    @endif
+                </flux:navlist.group>
+            </flux:navlist>
+
+            <flux:spacer />
+
+            
 
            
 
@@ -156,7 +179,6 @@
                 </flux:menu>
             </flux:dropdown>
         </flux:header>
-
         {{ $slot }}
 
         @fluxScripts

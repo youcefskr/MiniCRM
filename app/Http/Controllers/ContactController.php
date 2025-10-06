@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
@@ -60,5 +59,19 @@ class ContactController extends Controller
         return redirect()
             ->route('contacts.index')
             ->with('success', 'Le contact a été supprimé avec succès.');
+    }
+
+    public function show(Contact $contact)
+    {
+        return view('contacts.show', compact('contact'));
+    }
+
+    public function information()
+    {
+        $contacts = Contact::with('user')
+            ->orderBy('nom')
+            ->paginate(12);
+            
+        return view('contacts.information', compact('contacts'));
     }
 }
