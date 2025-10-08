@@ -89,7 +89,16 @@ class ContactController extends Controller
             ->with('success', 'Le contact a été supprimé avec succès.');
     }
 
-    
+    /**
+     * Display the specified contact.
+     *
+     * @param  \App\Models\Contact  $contact
+     * @return \Illuminate\View\View
+     */
+    public function show(Contact $contact)
+    {
+        return view('contacts.show', compact('contact'));
+    }
 
     public function information(Request $request)
     {

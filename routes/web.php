@@ -6,6 +6,8 @@ use Livewire\Volt\Volt;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\InteractionController;
+use App\Http\Controllers\TypeInteractionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,6 +69,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contacts/information', [ContactController::class, 'information'])
         ->name('contacts.information');
     Route::resource('contacts', ContactController::class);
+    
+    // Routes pour les interactions
+    Route::get('/contacts/{contact}/interactions', [InteractionController::class, 'index'])
+        ->name('contacts.interactions.index');
+    Route::post('/contacts/{contact}/interactions', [InteractionController::class, 'store'])
+        ->name('contacts.interactions.store');
+    Route::post('/contacts/{contact}/interactions/{interaction}/notes', [InteractionController::class, 'addNote'])
+        ->name('contacts.interactions.addNote');
+    Route::delete('/contacts/{contact}/interactions/{interaction}', [InteractionController::class, 'destroy'])
+        ->name('contacts.interactions.destroy');
+
+    
+    Route::get('/interactions', [InteractionController::class, 'all'])
+        ->name('interactions.all');
+
+    // Routes pour les types d'interactions
+    Route::resource('types-interactions', TypeInteractionController::class);
 });
 
 

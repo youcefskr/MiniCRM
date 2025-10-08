@@ -16,18 +16,5 @@
     {{ __('Information contacts') }}
 </flux:navlist.item>
 
-<flux:navlist.item 
-    @click="$dispatch('show-create-modal')"
-    icon="document-plus" 
-    class="text-sm cursor-pointer"
->
-    {{ __('Ajouter un contact') }}
-</flux:navlist.item>
 
-<flux:navlist.item 
-    @click="$dispatch('export-contacts')"
-    icon="document-arrow-down" 
-    class="text-sm cursor-pointer"
->
-    {{ __('Exporter') }}
-</flux:navlist.item>
+

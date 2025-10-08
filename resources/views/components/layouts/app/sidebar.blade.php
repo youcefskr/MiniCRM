@@ -39,6 +39,28 @@
                             </flux:navlist.item>
                         @endcan
 
+                        <flux:navlist.item 
+                            icon="chat-bubble-left-right" 
+                            :href="route('interactions.all')" 
+                            :current="request()->routeIs('interactions.all')" 
+                            wire:navigate
+                        >
+                            {{ __('Toutes les interactions') }}
+                        </flux:navlist.item>
+
+                        <!-- Ajout du nouveau menu pour les types d'interactions -->
+                         @can('gere type interaction')
+                        <flux:navlist.item 
+                            icon="list-bullet" 
+                            :href="route('types-interactions.index')" 
+                            :current="request()->routeIs('types-interactions.*')" 
+                            wire:navigate
+                        >
+                            {{ __('Types d\'interactions') }}
+                        </flux:navlist.item>
+                        @endcan
+
+
                         <flux:navlist.group x-data="{ open: false }" class="relative">
                             <flux:navlist.item 
                                 @click="open = !open"
