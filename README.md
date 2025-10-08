@@ -12,7 +12,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/crm.git
+git clone https://github.com/youcefskr/MiniCRM.git
 ```
 
 2. Install dependencies:
