@@ -19,6 +19,7 @@ class TypeInteractionController extends Controller
         $validated = $request->validate([
             'nom' => ['required', 'string', 'max:255', 'unique:types_interactions'],
             'description' => ['nullable', 'string'],
+            'couleur' => ['nullable', 'string', 'max:20'],
         ], [
             'nom.unique' => 'Ce type d\'interaction existe déjà.',
             'nom.required' => 'Le nom est requis.',
@@ -31,11 +32,12 @@ class TypeInteractionController extends Controller
             ->with('success', 'Le type d\'interaction a été créé avec succès.');
     }
 
-    public function update(Request $request, TypeInteraction $typesInteraction)  // Changé de $typeInteraction
+    public function update(Request $request, TypeInteraction $typesInteraction)  
     {
         $validated = $request->validate([
             'nom' => ['required', 'string', 'max:255', 'unique:types_interactions,nom,' . $typesInteraction->id],
             'description' => ['nullable', 'string'],
+            'couleur' => ['nullable', 'string', 'max:20'],
         ]);
 
         $typesInteraction->update($validated);
@@ -44,8 +46,7 @@ class TypeInteractionController extends Controller
             ->route('types-interactions.index')
             ->with('success', 'Le type d\'interaction a été mis à jour avec succès.');
     }
-
-    public function destroy(TypeInteraction $typesInteraction)  // Changé de $typeInteraction
+    public function destroy(TypeInteraction $typesInteraction)  
     {
         $typesInteraction->delete();
 

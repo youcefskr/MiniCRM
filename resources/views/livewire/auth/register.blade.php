@@ -38,65 +38,84 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
-
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
-
-    <form method="POST" wire:submit="register" class="flex flex-col gap-6">
-        <!-- Name -->
-        <flux:input
-            wire:model="name"
-            :label="__('Name')"
-            type="text"
-            required
-            autofocus
-            autocomplete="name"
-            :placeholder="__('Full name')"
-        />
-
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email address')"
-            type="email"
-            required
-            autocomplete="email"
-            placeholder="email@example.com"
-        />
-
-        <!-- Password -->
-        <flux:input
-            wire:model="password"
-            :label="__('Password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-            viewable
-        />
-
-        <!-- Confirm Password -->
-        <flux:input
-            wire:model="password_confirmation"
-            :label="__('Confirm password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Confirm password')"
-            viewable
-        />
-
-        <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
-                {{ __('Create account') }}
-            </flux:button>
+<div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div class="w-full max-w-md">
+        <!-- CRM Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-primary-600 dark:text-primary-400">CRM System</h1>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">Create your account</p>
         </div>
-    </form>
 
-    <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-        <span>{{ __('Already have an account?') }}</span>
-        <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8">
+            <x-auth-header 
+                :title="__('Register new account')" 
+                :description="__('Join our CRM platform')" 
+            />
+
+            <!-- Session Status -->
+            <x-auth-session-status class="mb-4 text-center" :status="session('status')" />
+
+            <form method="POST" wire:submit="register" class="space-y-6">
+                <!-- Name -->
+                <flux:input
+                    wire:model="name"
+                    :label="__('Full name')"
+                    type="text"
+                    required
+                    autofocus
+                    autocomplete="name"
+                    :placeholder="__('Enter your full name')"
+                    class="block w-full"
+                />
+
+                <!-- Email Address -->
+                <flux:input
+                    wire:model="email"
+                    :label="__('Email address')"
+                    type="email"
+                    required
+                    autocomplete="email"
+                    placeholder="email@example.com"
+                    class="block w-full"
+                />
+
+                <!-- Password -->
+                <flux:input
+                    wire:model="password"
+                    :label="__('Password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :placeholder="__('Create a password')"
+                    viewable
+                    class="block w-full"
+                />
+
+                <!-- Confirm Password -->
+                <flux:input
+                    wire:model="password_confirmation"
+                    :label="__('Confirm password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :placeholder="__('Repeat your password')"
+                    viewable
+                    class="block w-full"
+                />
+
+                <flux:button variant="primary" type="submit" class="w-full py-3" data-test="register-user-button">
+                    {{ __('Create account') }}
+                </flux:button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ __('Already have an account?') }}
+                    <flux:link :href="route('login')" wire:navigate class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">
+                        {{ __('Sign in instead') }}
+                    </flux:link>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

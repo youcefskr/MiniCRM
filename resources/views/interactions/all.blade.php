@@ -1,9 +1,24 @@
 
 <x-layouts.app :title="__('Toutes les interactions')">
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-            {{ __('Toutes les interactions') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                {{ __('Toutes les interactions') }}
+            </h2>
+            <div class="flex gap-2">
+                <a href="{{ route('interactions.modern') }}" 
+                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                    {{ __('Vue timeline') }}
+                </a>
+                <a href="{{ route('interactions.dashboard') }}" 
+                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    {{ __('Dashboard') }}
+                </a>
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -15,11 +30,7 @@
                             <div class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-3">
-                                        <span class="px-2 py-1 text-xs rounded-full 
-                                            {{ $interaction->type->nom === 'Appel' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' : '' }}
-                                            {{ $interaction->type->nom === 'E-mail' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : '' }}
-                                            {{ $interaction->type->nom === 'Réunion' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' : '' }}
-                                        ">
+                                        <span class="px-2 py-1 text-xs rounded-full {{ $interaction->type->getBadgeClasses() }}">
                                             {{ $interaction->type->nom }}
                                         </span>
                                         <a href="{{ route('contacts.show', $interaction->contact) }}" class="text-blue-600 dark:text-blue-400 hover:underline">

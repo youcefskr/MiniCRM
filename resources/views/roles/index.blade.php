@@ -47,7 +47,10 @@
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                Gestion des rôles et permissions
+            </h2>
+            <div class="mt-4"></div>
             <!-- Section Rôles -->
             @include('roles.roles-list')
 

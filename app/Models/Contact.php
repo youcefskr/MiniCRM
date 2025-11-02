@@ -35,7 +35,7 @@ class Contact extends Model
 
     /**
      * Get the interactions for the contact.
-     */
+    */
     public function interactions(): HasMany
     {
         return $this->hasMany(Interaction::class);

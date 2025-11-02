@@ -19,8 +19,6 @@ Route::view('dashboard', 'dashboard')
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/roles', [RolePermissionController::class, 'index'])->name('roles.index');
 
-    // 👇 Routes pour les formulaires
-   // Gestion des rôles
     Route::post('/roles', [RolePermissionController::class, 'storeRole'])
         ->name('roles.store');
     
@@ -45,6 +43,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::resource('users', UserController::class)->except(['show']);
+
+    // routes supplémentaires pour export et suppression en masse
+    Route::get('users/export', [UserController::class, 'export'])->name('users.export');
+    Route::post('users/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('users.bulkDestroy');
+    
+    // Add these new routes for contacts in admin section
+    Route::get('contacts/export', [ContactController::class, 'export'])->name('contacts.export');
+    Route::post('contacts/bulk-destroy', [ContactController::class, 'bulkDestroy'])->name('contacts.bulkDestroy');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -70,21 +77,29 @@ Route::middleware(['auth'])->group(function () {
         ->name('contacts.information');
     Route::resource('contacts', ContactController::class);
     
-    // Routes pour les interactions
+   
     Route::get('/contacts/{contact}/interactions', [InteractionController::class, 'index'])
         ->name('contacts.interactions.index');
     Route::post('/contacts/{contact}/interactions', [InteractionController::class, 'store'])
         ->name('contacts.interactions.store');
+    Route::put('/contacts/{contact}/interactions/{interaction}', [InteractionController::class, 'update'])
+        ->name('contacts.interactions.update');
     Route::post('/contacts/{contact}/interactions/{interaction}/notes', [InteractionController::class, 'addNote'])
         ->name('contacts.interactions.addNote');
     Route::delete('/contacts/{contact}/interactions/{interaction}', [InteractionController::class, 'destroy'])
         ->name('contacts.interactions.destroy');
+        
 
     
     Route::get('/interactions', [InteractionController::class, 'all'])
         ->name('interactions.all');
+    
+    Route::get('/interactions/modern', [InteractionController::class, 'modern'])
+        ->name('interactions.modern');
+    
+    Route::get('/interactions/dashboard', [InteractionController::class, 'dashboard'])
+        ->name('interactions.dashboard');
 
-    // Routes pour les types d'interactions
     Route::resource('types-interactions', TypeInteractionController::class);
 });
 

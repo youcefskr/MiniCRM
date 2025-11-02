@@ -10,10 +10,35 @@ use Illuminate\Support\Facades\Notification;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $contacts = Contact::with('user')->get();
-        return view('contacts.index', compact('contacts'));
+        $query = Contact::with('user');
+
+        // Filtrage par recherche
+        if ($search = $request->input('q')) {
+            $query->where(function($q) use ($search) {
+                $q->where('nom', 'like', "%{$search}%")
+                  ->orWhere('prenom', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('telephone', 'like', "%{$search}%")
+                  ->orWhere('entreprise', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtrage par entreprise
+        if ($entreprise = $request->input('entreprise')) {
+            $query->where('entreprise', $entreprise);
+        }
+
+        $contacts = $query->orderBy('nom')
+                         ->paginate(15)
+                         ->withQueryString();
+
+        $entreprises = Contact::distinct('entreprise')
+                             ->whereNotNull('entreprise')
+                             ->pluck('entreprise');
+
+        return view('contacts.index', compact('contacts', 'entreprises'));
     }
 
     public function store(Request $request)
@@ -120,5 +145,70 @@ class ContactController extends Controller
             ->withQueryString();
             
         return view('contacts.information', compact('contacts', 'search'));
+    }
+
+    /**
+     * Export contacts to CSV
+     */
+    public function export(Request $request)
+    {
+        $query = Contact::with('user');
+
+        // Appliquer les mêmes filtres que l'index
+        if ($search = $request->input('q')) {
+            $query->where(function($q) use ($search) {
+                $q->where('nom', 'like', "%{$search}%")
+                  ->orWhere('prenom', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('telephone', 'like', "%{$search}%")
+                  ->orWhere('entreprise', 'like', "%{$search}%");
+            });
+        }
+
+        if ($entreprise = $request->input('entreprise')) {
+            $query->where('entreprise', $entreprise);
+        }
+
+        $contacts = $query->orderBy('nom')->get();
+
+        $filename = 'contacts_export_' . now()->format('Ymd_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($contacts) {
+            $handle = fopen('php://output', 'w');
+            // BOM UTF-8 pour Excel
+            echo "\xEF\xBB\xBF";
+            
+            // En-têtes
+            fputcsv($handle, [
+                'Nom',
+                'Prénom',
+                'Email',
+                'Téléphone',
+                'Entreprise',
+                'Créé le',
+                'Modifié le'
+            ]);
+
+            // Données
+            foreach ($contacts as $contact) {
+                fputcsv($handle, [
+                    $contact->nom,
+                    $contact->prenom,
+                    $contact->email,
+                    $contact->telephone,
+                    $contact->entreprise,
+                    $contact->created_at->format('d/m/Y H:i'),
+                    $contact->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

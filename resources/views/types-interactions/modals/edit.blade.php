@@ -51,6 +51,25 @@
                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
                                   rows="3"></textarea>
                     </div>
+
+                    <div>
+                        <label for="edit_couleur" class="block text-sm font-medium text-gray-700">Couleur</label>
+                        <select name="couleur" 
+                                id="edit_couleur"
+                                x-model="selectedType.couleur"
+                                class="mt-1 block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base">
+                            <option value="">Sélectionner une couleur</option>
+                            <option value="blue">Bleu</option>
+                            <option value="green">Vert</option>
+                            <option value="purple">Violet</option>
+                            <option value="yellow">Jaune</option>
+                            <option value="orange">Orange</option>
+                            <option value="red">Rouge</option>
+                            <option value="gray">Gris</option>
+                            <option value="indigo">Indigo</option>
+                            <option value="pink">Rose</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

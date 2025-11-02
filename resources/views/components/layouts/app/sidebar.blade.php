@@ -41,8 +41,8 @@
 
                         <flux:navlist.item 
                             icon="chat-bubble-left-right" 
-                            :href="route('interactions.all')" 
-                            :current="request()->routeIs('interactions.all')" 
+                            :href="route('interactions.dashboard')" 
+                            :current="request()->routeIs('interactions.dashboard')" 
                             wire:navigate
                         >
                             {{ __('Toutes les interactions') }}
@@ -59,6 +59,14 @@
                             {{ __('Types d\'interactions') }}
                         </flux:navlist.item>
                         @endcan
+                        <flux:navlist.item 
+                            icon="list-bullet" 
+                            :href="route('types-interactions.index')" 
+                            :current="request()->routeIs('types-interactions.*')" 
+                            wire:navigate
+                        >
+                            {{ __('Messanger') }}
+                        </flux:navlist.item>
 
 
                         <flux:navlist.group x-data="{ open: false }" class="relative">
