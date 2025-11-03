@@ -43,35 +43,29 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validation en premier, hors du try-catch
+        $validated = $request->validate([
+            'nom' => ['required', 'string', 'max:255'],
+            'prenom' => ['nullable', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:contacts,email'],
+            'telephone' => ['required', 'string', 'unique:contacts,telephone'],
+            'entreprise' => ['nullable', 'string', 'max:255'],
+            'adresse' => ['nullable', 'string'],
+        ]);
+
+        // 2. Logique métier dans le try-catch
         try {
-            $validated = $request->validate([
-                'nom' => ['required', 'string', 'max:255'],
-                'prenom' => ['nullable', 'string', 'max:255'],
-                'email' => ['required', 'email', 'unique:contacts,email'],
-                'telephone' => ['required', 'string', 'unique:contacts,telephone'],
-                'entreprise' => ['nullable', 'string', 'max:255'],
-                'adresse' => ['nullable', 'string'],
-            ]);
-
-            // Vérifier si l'utilisateur est connecté
-            if (!Auth::check()) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', 'Vous devez être connecté pour créer un contact.');
-            }
-
-            // Ajouter l'ID de l'utilisateur connecté
+            // Ajout de l'ID utilisateur
             $validated['user_id'] = Auth::id();
             
-            // Créer le contact
+            // Création du contact
             $contact = Contact::create($validated);
 
             if (!$contact) {
                 throw new \Exception('Erreur lors de la création du contact.');
             }
 
-            // Envoyer la notification au nouveau contact
+            // Envoi de la notification
             Notification::route('mail', $contact->email)
                 ->notify(new ContactCreated($contact));
 
