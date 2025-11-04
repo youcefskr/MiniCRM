@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\TypeInteractionController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 
 
 Route::get('/chatbot', function () {
@@ -57,6 +59,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Add these new routes for contacts in admin section
     Route::get('contacts/export', [ContactController::class, 'export'])->name('contacts.export');
     Route::post('contacts/bulk-destroy', [ContactController::class, 'bulkDestroy'])->name('contacts.bulkDestroy');
+
+    //Products
+    Route::resource('categories', CategoryController::class);
+    Route::resource('products', ProductController::class);
 });
 
 Route::middleware(['auth'])->group(function () {
