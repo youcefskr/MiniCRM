@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\GeminiService;
 use App\Models\Message;
+use App\Models\KnowledgeBase;
+
 
 class ChatbotController extends Controller
 {
@@ -18,7 +20,7 @@ class ChatbotController extends Controller
     public function respond(Request $request)
     {
         $clientMessage = $request->input('message');
-        
+
         // Step 1: Retrieve relevant info (RAG layer)
         $context = $this->getRelevantContext($clientMessage);
 
@@ -43,8 +45,31 @@ class ChatbotController extends Controller
 
     protected function getRelevantContext($message)
     {
-        // Example of RAG: fetch last messages or FAQ
-        $previous = Message::latest()->take(5)->pluck('content')->implode("\n");
-        return $previous ?: "No previous context available.";
+        $embedder = new \App\Services\EmbeddingService();
+        $queryVector = $embedder->embed($message);
+
+        $docs = KnowledgeBase::all();
+
+        $results = $docs->map(function ($doc) use ($queryVector) {
+            $docVector = json_decode($doc->embedding, true);
+            $similarity = $this->cosineSimilarity($queryVector, $docVector);
+            return ['content' => $doc->content, 'score' => $similarity];
+        })->sortByDesc('score')->take(3);
+
+        return $results->pluck('content')->implode("\n");
+    }
+
+    protected function cosineSimilarity($a, $b)
+    {
+        $dot = 0.0;
+        $normA = 0.0;
+        $normB = 0.0;
+        for ($i = 0; $i < count($a); $i++) {
+            $dot += $a[$i] * $b[$i];
+            $normA += $a[$i] ** 2;
+            $normB += $b[$i] ** 2;
+        }
+        if ($normA == 0 || $normB == 0) return 0;
+        return $dot / (sqrt($normA) * sqrt($normB));
     }
 }

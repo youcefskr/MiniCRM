@@ -10,13 +10,13 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
-        // 🛠️ Créer les rôles
-        $admin = Role::create(['name' => 'admin']);
-        $user = Role::create(['name' => 'user']);
+        // Create roles safely (avoids duplicates)
+        $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $user = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
 
-        // 📜 Créer les permissions
+        // List of permissions
         $permissions = [
-            // Utilisateurs
+            // Users
             'manage users',
             'view users',
 
@@ -34,18 +34,21 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit interactions',
             'delete interactions',
             'schedule interactions',
+
+            // Roles & Permissions
             'manage role and permissions',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+        // Create permissions safely
+        foreach ($permissions as $permissionName) {
+            Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
         }
 
-        // 👑 Donner toutes les permissions à l'admin
-        $admin->givePermissionTo(Permission::all());
+        // Give all permissions to admin
+        $admin->syncPermissions(Permission::all());
 
-        // 👤 Donner uniquement les permissions utilisateur standard
-        $user->givePermissionTo([
+        // Give only specific permissions to user
+        $userPermissions = [
             'create contacts',
             'edit contacts',
             'view contacts',
@@ -54,6 +57,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'create interactions',
             'view interactions',
             'schedule interactions',
-        ]);
+        ];
+
+        $user->syncPermissions($userPermissions);
     }
 }

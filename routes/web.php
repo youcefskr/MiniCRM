@@ -8,9 +8,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\TypeInteractionController;
-use App\Http\Controllers\ChatbotController;
 
-Route::post('/chatbot/respond', [ChatbotController::class, 'respond']);
+
+Route::get('/chatbot', function () {
+    return view('chatbot');
+});
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
