@@ -106,7 +106,26 @@ Route::middleware(['auth'])->group(function () {
         ->name('interactions.dashboard');
 
     Route::resource('types-interactions', TypeInteractionController::class);
-});
 
+    // Routes pour la messagerie
+    Route::prefix('messages')->name('messages.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\MessageController::class, 'index'])->name('index');
+        Route::get('/new', [\App\Http\Controllers\MessageController::class, 'create'])->name('create');
+        Route::get('/search', [\App\Http\Controllers\MessageController::class, 'search'])->name('search');
+        Route::post('/private', [\App\Http\Controllers\MessageController::class, 'createPrivate'])->name('create.private');
+        Route::post('/group', [\App\Http\Controllers\MessageController::class, 'createGroup'])->name('create.group');
+        Route::get('/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('show');
+        Route::post('/{conversation}/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('store');
+        Route::post('/{conversation}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])->name('read');
+        Route::get('/{conversation}/messages', [\App\Http\Controllers\MessageController::class, 'getMessages'])->name('get-messages');
+    });
+
+    Route::get('/messenger', function () {
+        return view('messenger.index');
+    })->name('messenger');
+
+
+    
+});
 
 require __DIR__.'/auth.php';

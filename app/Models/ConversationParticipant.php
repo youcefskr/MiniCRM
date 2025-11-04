@@ -5,28 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Message extends Model
+class ConversationParticipant extends Model
 {
+    protected $table = 'conversation_participants';
+
     protected $fillable = [
         'conversation_id',
         'user_id',
-        'content',
-        'file_path',
-        'file_name',
-        'file_type',
-        'is_read',
-        'read_at',
+        'last_read_at',
     ];
 
     protected $casts = [
-        'is_read' => 'boolean',
-        'read_at' => 'datetime',
+        'last_read_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     /**
-     * Conversation du message
+     * Conversation
      */
     public function conversation(): BelongsTo
     {
@@ -34,7 +30,7 @@ class Message extends Model
     }
 
     /**
-     * Utilisateur qui a envoyé le message
+     * Utilisateur
      */
     public function user(): BelongsTo
     {
@@ -42,23 +38,21 @@ class Message extends Model
     }
 
     /**
-     * Marquer comme lu
+     * Marquer la conversation comme lue
      */
     public function markAsRead(): void
     {
-        if (!$this->is_read) {
-            $this->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
-        }
+        $this->update(['last_read_at' => now()]);
     }
 
     /**
-     * Vérifier si le message a un fichier
+     * Obtenir le nombre de messages non lus
      */
-    public function hasFile(): bool
+    public function unreadCount(): int
     {
-        return !is_null($this->file_path);
+        return $this->conversation->messages()
+            ->where('user_id', '!=', $this->user_id)
+            ->where('created_at', '>', $this->last_read_at ?? '1970-01-01')
+            ->count();
     }
 }

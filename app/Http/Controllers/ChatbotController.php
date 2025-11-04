@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\GeminiService;
-use App\Models\Message;
+use App\Models\MessageAi;
 use App\Models\KnowledgeBase;
 
 
@@ -31,11 +31,11 @@ class ChatbotController extends Controller
         $aiResponse = $this->gemini->generateResponse($prompt);
 
         // Step 4: Save both messages in DB
-        Message::create([
+        MessageAi::create([
             'sender' => 'client',
             'content' => $clientMessage,
         ]);
-        Message::create([
+        MessageAi::create([
             'sender' => 'ai',
             'content' => $aiResponse,
         ]);
