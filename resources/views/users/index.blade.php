@@ -1,12 +1,12 @@
 <x-layouts.app :title="__('Gestion des utilisateurs')">
-    <x-slot name="header">
+    
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 {{ __('Gestion des utilisateurs') }}
             </h2>
             
         </div>
-    </x-slot>
+    
 
     <div class="py-6" x-data="{ 
         showCreateModal: false,
@@ -19,10 +19,8 @@
     }">
         <!-- Filtres et recherche -->
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-6">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Gestion des utilisateurs
-            </h2>
-            <div class="mt-4"></div>
+            
+            
             <div class="bg-white rounded-lg shadow p-6">
                 <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
