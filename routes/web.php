@@ -10,7 +10,7 @@ use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\TypeInteractionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
-
+ use App\Http\Controllers\InformationController;
 
 Route::get('/chatbot', function () {
     return view('chatbot');
@@ -63,6 +63,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     //Products
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
+
+    //facts
+    Route::apiResource('informations', InformationController::class);
+
 });
 
 Route::middleware(['auth'])->group(function () {

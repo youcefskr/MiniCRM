@@ -9,9 +9,13 @@ class KnowledgeBase extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['content', 'embedding'];
+    protected $fillable = [
+        'content',
+        'embedding',
+        'metadata',
+    ];
 
     protected $casts = [
-        'embedding' => 'array',
+        'metadata' => 'array',
     ];
 }

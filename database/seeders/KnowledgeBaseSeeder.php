@@ -17,7 +17,8 @@ class KnowledgeBaseSeeder extends Seeder
             "We offer 24/7 support for premium clients.",
             "You can reset your password by clicking 'Forgot Password' on the login page.",
             "For billing inquiries, please contact the accounting department.",
-            "Our headquarters are located in Algiers."
+            "Our headquarters are located in Algiers.",
+            "We have office in Medea, alger et oran"
         ];
 
         foreach ($texts as $text) {
