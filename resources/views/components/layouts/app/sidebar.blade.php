@@ -56,6 +56,14 @@
                         >
                             {{ __('Messagerie') }}
                         </flux:navlist.item>
+                        <flux:navlist.item 
+                            icon="chat-bubble-left-ellipsis" 
+                            :href="route('tasks.index')" 
+                            :current="request()->routeIs('tasks.*')" 
+                            wire:navigate
+                        >
+                            {{ __('To do') }}
+                        </flux:navlist.item>
 
                         <!-- Ajout du nouveau menu pour les types d'interactions -->
                          @can('gere type interaction')

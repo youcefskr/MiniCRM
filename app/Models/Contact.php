@@ -40,4 +40,8 @@ class Contact extends Model
     {
         return $this->hasMany(Interaction::class);
     }
+    public function tasks()
+{
+    return $this->hasMany(Task::class);
+}
 }

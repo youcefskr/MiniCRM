@@ -10,8 +10,8 @@ use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\TypeInteractionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
- use App\Http\Controllers\InformationController;
-
+use App\Http\Controllers\InformationController;
+use App\Http\Controllers\TaskController;
 Route::get('/chatbot', function () {
     return view('chatbot');
 });
@@ -129,7 +129,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{conversation}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])->name('read');
         Route::get('/{conversation}/messages', [\App\Http\Controllers\MessageController::class, 'getMessages'])->name('get-messages');
     });
-
+    Route::resource('tasks', TaskController::class);
     Route::get('/messenger', function () {
         return view('messenger.index');
     })->name('messenger');
