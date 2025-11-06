@@ -63,6 +63,9 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     
     // Pas besoin de définir la relation roles() car elle est fournie par le trait HasRoles
-    
+    public function tasks()
+{
+    return $this->hasMany(Task::class);
+}
       
 }
