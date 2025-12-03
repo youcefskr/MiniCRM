@@ -130,6 +130,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{conversation}/messages', [\App\Http\Controllers\MessageController::class, 'getMessages'])->name('get-messages');
     });
     Route::resource('tasks', TaskController::class);
+    Route::post('/tasks/{task}/update-status', [\App\Http\Controllers\TaskController::class, 'updateStatus'])->name('tasks.update-status');
+    
+    // Opportunities
+    Route::resource('opportunities', \App\Http\Controllers\OpportunityController::class);
+    Route::post('/opportunities/{opportunity}/update-stage', [\App\Http\Controllers\OpportunityController::class, 'updateStage'])->name('opportunities.update-stage');
+
     Route::get('/messenger', function () {
         return view('messenger.index');
     })->name('messenger');

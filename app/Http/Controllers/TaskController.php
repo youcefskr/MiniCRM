@@ -14,12 +14,39 @@ class TaskController extends Controller
      */
     public function index()
     {
-        // On récupère tout pour le filtrage côté client (Alpine.js)
         $tasks = Task::with(['user', 'contact'])->latest()->get();
         $users = User::select('id', 'name')->get();
         $contacts = Contact::select('id', 'nom', 'prenom')->get();
         
-        return view('tasks.index', compact('tasks', 'users', 'contacts'));
+        $groupedTasks = $tasks->groupBy('status');
+        $statuses = [
+            'en attente' => 'En attente',
+            'en cours' => 'En cours',
+            'terminee' => 'Terminée'
+        ];
+
+        $stats = [
+            'total' => $tasks->count(),
+            'par_statut' => $tasks->groupBy('status')->map(function ($group, $status) {
+                return (object) [
+                    'statut' => $status,
+                    'count' => $group->count()
+                ];
+            })
+        ];
+        
+        return view('tasks.index', compact('tasks', 'groupedTasks', 'statuses', 'users', 'contacts', 'stats'));
+    }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:en attente,en cours,terminee',
+        ]);
+
+        $task->update(['status' => $validated['status']]);
+
+        return response()->json(['success' => true, 'message' => 'Statut mis à jour.']);
     }
 
     /**

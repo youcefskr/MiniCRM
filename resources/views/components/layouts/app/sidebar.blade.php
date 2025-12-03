@@ -5,140 +5,65 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+
+            <a href="{{ route('dashboard') }}" class="mr-5 flex items-center gap-2 px-2">
+                <svg class="size-6 text-zinc-900 dark:text-zinc-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                </svg>
+                <span class="font-bold text-zinc-900 dark:text-zinc-100">MiniCRM</span>
+            </a>
+
             <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    @if(auth()->check())
-                        <flux:navlist.item 
-                            icon="home" 
-                            :href="route('dashboard')" 
-                            :current="request()->routeIs('dashboard')" 
-                            wire:navigate
-                        >
-                            {{ __('Dashboard') }}
+                <flux:navlist.group heading="Plateforme" class="grid">
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Tableau de bord') }}</flux:navlist.item>
+                    <flux:navlist.item icon="currency-dollar" :href="route('opportunities.index')" :current="request()->routeIs('opportunities.*')" wire:navigate>{{ __('Opportunités') }}</flux:navlist.item>
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>{{ __('Tâches') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('interactions.dashboard')" :current="request()->routeIs('interactions.dashboard')" wire:navigate>{{ __('Interactions') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chat-bubble-left-ellipsis" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>{{ __('Messagerie') }}</flux:navlist.item>
+                    
+                    <flux:navlist.group x-data="{ open: false }" class="relative">
+                        <flux:navlist.item @click="open = !open" icon="users" class="cursor-pointer">
+                            <div class="flex items-center justify-between w-full">
+                                {{ __('Contacts') }}
+                                <flux:icon.chevron-down class="size-4 transition-transform" ::class="{ 'rotate-180': open }" />
+                            </div>
                         </flux:navlist.item>
+
+                        <div x-show="open" x-collapse class="pl-4 space-y-1">
+                            @include('components.layouts.app.sub-menus.contact-menu-items')
+                        </div>
+                    </flux:navlist.group>
+                </flux:navlist.group>
+
+                @if(auth()->user()->can('manage users') || auth()->user()->can('manage role and permissions') || auth()->user()->can('gere type interaction'))
+                    <flux:navlist.group heading="Administration" class="grid mt-4">
+                        @can('manage users')
+                            <flux:navlist.item icon="user-group" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>{{ __('Utilisateurs') }}</flux:navlist.item>
+                        @endcan
 
                         @can('manage role and permissions')
-                            <flux:navlist.item 
-                                icon="users" 
-                                :href="route('admin.roles.index')" 
-                                :current="request()->routeIs('admin.roles.*')" 
-                                wire:navigate
-                            >
-                                {{ __('rôles et permissions') }}
-                            </flux:navlist.item>
+                            <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')" :current="request()->routeIs('admin.roles.*')" wire:navigate>{{ __('Rôles & Permissions') }}</flux:navlist.item>
                         @endcan
 
-                        @can('manage users')
-                            <flux:navlist.item 
-                                icon="user-group" 
-                                :href="route('admin.users.index')" 
-                                :current="request()->routeIs('admin.users.*')" 
-                                wire:navigate
-                            >
-                                {{ __('Gestion des utilisateurs') }}
-                            </flux:navlist.item>
+                        @can('gere type interaction')
+                            <flux:navlist.item icon="list-bullet" :href="route('types-interactions.index')" :current="request()->routeIs('types-interactions.*')" wire:navigate>{{ __('Types d\'interactions') }}</flux:navlist.item>
                         @endcan
-
-                        <flux:navlist.item 
-                            icon="chat-bubble-left-right" 
-                            :href="route('interactions.dashboard')" 
-                            :current="request()->routeIs('interactions.dashboard')" 
-                            wire:navigate
-                        >
-                            {{ __('Toutes les interactions') }}
-                        </flux:navlist.item>
-
-                        <flux:navlist.item 
-                            icon="chat-bubble-left-ellipsis" 
-                            :href="route('messages.index')" 
-                            :current="request()->routeIs('messages.*')" 
-                            wire:navigate
-                        >
-                            {{ __('Messagerie') }}
-                        </flux:navlist.item>
-                        <flux:navlist.item 
-                            icon="chat-bubble-left-ellipsis" 
-                            :href="route('tasks.index')" 
-                            :current="request()->routeIs('tasks.*')" 
-                            wire:navigate
-                        >
-                            {{ __('To do') }}
-                        </flux:navlist.item>
-
-                        <!-- Ajout du nouveau menu pour les types d'interactions -->
-                         @can('gere type interaction')
-                        <flux:navlist.item 
-                            icon="list-bullet" 
-                            :href="route('types-interactions.index')" 
-                            :current="request()->routeIs('types-interactions.*')" 
-                            wire:navigate
-                        >
-                            {{ __('Types d\'interactions') }}
-                        </flux:navlist.item>
-                        @endcan
-
-
-                        <flux:navlist.group x-data="{ open: false }" class="relative">
-                            <flux:navlist.item 
-                                @click="open = !open"
-                                icon="identification" 
-                                class="cursor-pointer"
-                            >
-                                <div class="flex items-center justify-between w-full">
-                                    {{ __('Gestion des contacts') }}
-                                    <svg 
-                                        class="w-4 h-4 transition-transform"
-                                        :class="{ 'rotate-180': open }"
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </flux:navlist.item>
-
-                            <div 
-                                x-show="open" 
-                                x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="opacity-0 transform -translate-y-2"
-                                x-transition:enter-end="opacity-100 transform translate-y-0"
-                                x-transition:leave="transition ease-in duration-150"
-                                x-transition:leave-start="opacity-100 transform translate-y-0"
-                                x-transition:leave-end="opacity-0 transform -translate-y-2"
-                                class="pl-8 space-y-1"
-                            >
-                                <!-- Sous-menus des contacts -->
-                                @include('components.layouts.app.sub-menus.contact-menu-items')
-                            </div>
-                        </flux:navlist.group>
-                    @endif
-                </flux:navlist.group>
+                    </flux:navlist.group>
+                @endif
             </flux:navlist>
 
             <flux:spacer />
 
-            
-
-           
-
-            <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
-                <flux:profile
-                    :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
-                    icon:trailing="chevrons-up-down"
-                    data-test="sidebar-menu-button"
-                />
+                <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()" icon:trailing="chevrons-up-down" />
 
                 <flux:menu class="w-[220px]">
                     <flux:menu.radio.group>
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
+                                    <span class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                         {{ auth()->user()->initials() }}
                                     </span>
                                 </span>
@@ -153,71 +78,47 @@
 
                     <flux:menu.separator />
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
+                    <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Paramètres') }}</flux:menu.item>
+                    
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full" data-test="logout-button">
-                            {{ __('Log Out') }}
+                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                            {{ __('Déconnexion') }}
                         </flux:menu.item>
                     </form>
                 </flux:menu>
             </flux:dropdown>
         </flux:sidebar>
 
-        <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
+        <!-- Top Navbar -->
+        <flux:header class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
-            <flux:spacer />
+            <div class="flex items-center gap-4 w-full">
+                <flux:input icon="magnifying-glass" placeholder="Rechercher..." class="max-w-sm hidden lg:block" />
+                
+                <flux:spacer />
 
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
+                <flux:button icon="bell" variant="ghost" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200" />
+                <flux:button icon="question-mark-circle" variant="ghost" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hidden lg:flex" />
 
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
+                <!-- Mobile Profile Dropdown -->
+                <flux:dropdown position="top" align="end" class="lg:hidden">
+                    <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full" data-test="logout-button">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
+                    <flux:menu>
+                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Paramètres') }}</flux:menu.item>
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                                {{ __('Déconnexion') }}
+                            </flux:menu.item>
+                        </form>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
         </flux:header>
+
         {{ $slot }}
 
         @fluxScripts
