@@ -1,133 +1,133 @@
-<x-layouts.app :title="__('Recherche de messages')">
-
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                {{ __('Recherche de messages') }}
-            </h2>
-            <a href="{{ route('messages.index') }}" 
-               class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Retour
-            </a>
-        </div>
-
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-                <!-- Barre de recherche améliorée -->
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <form method="GET" action="{{ route('messages.search') }}" class="space-y-4">
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <div class="flex-1">
-                                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Rechercher dans les messages
-                                </label>
-                                <div class="relative">
-                                    <input type="text" 
-                                           id="search"
-                                           name="q" 
-                                           value="{{ $query }}"
-                                           placeholder="Mots-clés, contenu..."
-                                           class="block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex items-end">
-                                <button type="submit"
-                                        class="w-full md:w-auto px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Rechercher
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+<x-layouts.app :title="__('Rechercher dans les messages')">
+    <div class="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-800 dark:to-zinc-900">
+        <div class="max-w-4xl mx-auto p-6">
+            <!-- Header -->
+            <div class="flex items-center gap-4 mb-6">
+                <a href="{{ route('messages.index') }}" 
+                   class="p-2 text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 rounded-xl transition">
+                    <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Rechercher</h1>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Trouvez des messages dans vos conversations</p>
                 </div>
+            </div>
 
-                <!-- Résultats de recherche -->
-                <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @if($query)
-                        @forelse($messages as $message)
-                            <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                <div class="flex items-start space-x-3">
+            <!-- Barre de recherche -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-700 p-6 mb-6">
+                <form method="GET" action="{{ route('messages.search') }}" class="flex gap-3">
+                    <div class="relative flex-1">
+                        <input type="text" 
+                               name="q" 
+                               value="{{ $query ?? '' }}"
+                               placeholder="Rechercher un message..." 
+                               autofocus
+                               class="w-full pl-12 pr-4 py-4 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 text-lg">
+                        <svg class="absolute left-4 top-4 size-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <button type="submit" 
+                            class="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-purple-700 shadow-lg transition">
+                        Rechercher
+                    </button>
+                </form>
+            </div>
+
+            <!-- Résultats -->
+            @if(isset($messages))
+                @if($messages->isEmpty())
+                    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-700 p-12 text-center">
+                        <div class="size-20 mx-auto mb-4 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            <svg class="size-10 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Aucun résultat</h3>
+                        <p class="text-zinc-500 dark:text-zinc-400">Aucun message ne correspond à "{{ $query }}"</p>
+                    </div>
+                @else
+                    <div class="mb-4 flex items-center justify-between">
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                            <span class="font-semibold text-zinc-900 dark:text-zinc-100">{{ $messages->total() }}</span> résultat(s) pour "<span class="font-medium">{{ $query }}</span>"
+                        </p>
+                    </div>
+
+                    <div class="space-y-3">
+                        @foreach($messages as $message)
+                            <a href="{{ route('messages.show', $message->conversation) }}" 
+                               class="block bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-4 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                                <div class="flex items-start gap-4">
+                                    <!-- Avatar -->
                                     <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">
+                                        <div class="size-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold">
                                             {{ $message->user->name[0] ?? 'U' }}
                                         </div>
                                     </div>
+
+                                    <!-- Content -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center space-x-2">
-                                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {{ $message->user->name }}
-                                                </p>
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                    {{ $message->created_at->format('d M Y, H:i') }}
-                                                </span>
-                                            </div>
-                                            <a href="{{ route('messages.show', $message->conversation) }}" 
-                                               class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                                Voir la conversation
-                                                <svg class="ml-1.5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                                </svg>
-                                            </a>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-semibold text-zinc-900 dark:text-zinc-100">{{ $message->user->name }}</span>
+                                            <span class="text-xs text-zinc-400">•</span>
+                                            <span class="text-sm text-zinc-500 dark:text-zinc-400">
+                                                {{ $message->conversation->type === 'private' ? 'Conversation privée' : $message->conversation->name }}
+                                            </span>
                                         </div>
-                                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                                            {{ $message->content }}
+                                        
+                                        <p class="text-zinc-700 dark:text-zinc-300 line-clamp-2">
+                                            {!! preg_replace('/(' . preg_quote($query, '/') . ')/i', '<mark class="bg-yellow-200 dark:bg-yellow-900/50 px-0.5 rounded">$1</mark>', e($message->content)) !!}
                                         </p>
-                                        @if($message->file_path)
-                                            <div class="mt-2">
-                                                <a href="/storage/{{ $message->file_path }}" 
-                                                   class="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
-                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                        
+                                        <div class="flex items-center gap-2 mt-2 text-xs text-zinc-400">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $message->created_at->format('d/m/Y à H:i') }}
+                                            
+                                            @if($message->file_path)
+                                                <span class="flex items-center gap-1 text-indigo-500">
+                                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                                                     </svg>
-                                                    {{ $message->file_name }}
-                                                </a>
-                                            </div>
-                                        @endif
+                                                    Fichier joint
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Arrow -->
+                                    <div class="flex-shrink-0 self-center">
+                                        <svg class="size-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </div>
                                 </div>
-                            </div>
-                        @empty
-                            <div class="p-12 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">Aucun résultat</h3>
-                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    Aucun message ne correspond à votre recherche
-                                </p>
-                            </div>
-                        @endforelse
+                            </a>
+                        @endforeach
+                    </div>
 
-                        <!-- Pagination -->
-                        @if($messages->hasPages())
-                            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                                {{ $messages->links() }}
-                            </div>
-                        @endif
-                    @else
-                        <div class="p-12 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
-                                Recherchez dans vos messages
-                            </h3>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                Utilisez la barre de recherche ci-dessus pour trouver des messages spécifiques
-                            </p>
-                        </div>
-                    @endif
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        {{ $messages->withQueryString()->links() }}
+                    </div>
+                @endif
+            @else
+                <!-- État initial sans recherche -->
+                <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-700 p-12 text-center">
+                    <div class="size-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 flex items-center justify-center">
+                        <svg class="size-12 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Rechercher dans vos messages</h3>
+                    <p class="text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
+                        Entrez un mot-clé pour trouver des messages dans toutes vos conversations
+                    </p>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </x-layouts.app>

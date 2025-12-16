@@ -1,151 +1,180 @@
 <x-layouts.app :title="__('Nouvelle conversation')">
+    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6 bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-800 dark:to-zinc-900" 
+         x-data="{ 
+             activeTab: 'private',
+             searchQuery: '',
+             selectedUsers: [],
+             groupName: '',
+             
+             toggleUser(userId) {
+                 const index = this.selectedUsers.indexOf(userId);
+                 if (index > -1) {
+                     this.selectedUsers.splice(index, 1);
+                 } else {
+                     this.selectedUsers.push(userId);
+                 }
+             },
+             
+             isSelected(userId) {
+                 return this.selectedUsers.includes(userId);
+             }
+         }">
+        <div class="w-full max-w-2xl">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="size-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center shadow-2xl">
+                    <svg class="size-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Nouvelle conversation</h1>
+                <p class="text-zinc-600 dark:text-zinc-400">Démarrez une discussion privée ou créez un groupe</p>
+            </div>
 
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                {{ __('Nouvelle conversation') }}
-            </h2>
-            <a href="{{ route('messages.index') }}" 
-               class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Retour
-            </a>
-        </div>
+            <!-- Card principale -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                <!-- Tabs -->
+                <div class="flex border-b border-zinc-200 dark:border-zinc-700">
+                    <button @click="activeTab = 'private'; selectedUsers = []"
+                            :class="activeTab === 'private' ? 'text-indigo-600 border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-zinc-500 border-transparent hover:text-zinc-700 dark:hover:text-zinc-300'"
+                            class="flex-1 py-4 px-6 text-sm font-semibold border-b-2 transition flex items-center justify-center gap-2">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Conversation privée
+                    </button>
+                    <button @click="activeTab = 'group'; selectedUsers = []"
+                            :class="activeTab === 'group' ? 'text-indigo-600 border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-zinc-500 border-transparent hover:text-zinc-700 dark:hover:text-zinc-300'"
+                            class="flex-1 py-4 px-6 text-sm font-semibold border-b-2 transition flex items-center justify-center gap-2">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Créer un groupe
+                    </button>
+                </div>
 
-
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-                <div class="p-6" x-data="{ conversationType: 'private' }">
-                    <!-- Type de conversation avec design amélioré -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                            Choisissez le type de conversation
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button type="button" 
-                                    @click="conversationType = 'private'"
-                                    :class="{'ring-2 ring-blue-500': conversationType === 'private'}"
-                                    class="relative rounded-lg border border-gray-300 dark:border-gray-600 p-4 hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-200">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="text-base font-medium text-gray-900 dark:text-gray-100">Conversation privée</h4>
-                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Discussion en tête-à-tête avec un utilisateur</p>
-                                    </div>
-                                </div>
-                            </button>
-
-                            <button type="button"
-                                    @click="conversationType = 'group'"
-                                    :class="{'ring-2 ring-blue-500': conversationType === 'group'}"
-                                    class="relative rounded-lg border border-gray-300 dark:border-gray-600 p-4 hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-200">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="text-base font-medium text-gray-900 dark:text-gray-100">Conversation de groupe</h4>
-                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Créer un groupe avec plusieurs participants</p>
-                                    </div>
-                                </div>
-                            </button>
-                        </div>
+                <div class="p-6">
+                    <!-- Recherche -->
+                    <div class="relative mb-4">
+                        <input type="text" 
+                               x-model="searchQuery"
+                               placeholder="Rechercher un utilisateur..." 
+                               class="w-full pl-11 pr-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                        <svg class="absolute left-4 top-3.5 size-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
 
-                    <!-- Formulaire conversation privée -->
-                    <div x-show="conversationType === 'private'" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-4"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         class="space-y-6">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Nouvelle conversation privée</h3>
-                        <form action="{{ route('messages.create.private') }}" method="POST">
-                            @csrf
-                            <div class="space-y-4">
-                                <div>
-                                    <label for="user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Sélectionner un utilisateur
-                                    </label>
-                                    <select id="user_id" 
-                                            name="user_id" 
-                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                                            required>
-                                        <option value="">Choisir un utilisateur</option>
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
+                    <!-- Nom du groupe (si tab groupe) -->
+                    <div x-show="activeTab === 'group'" x-transition class="mb-4">
+                        <input type="text" 
+                               x-model="groupName"
+                               placeholder="Nom du groupe..."
+                               class="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Utilisateurs sélectionnés (pour groupe) -->
+                    <div x-show="activeTab === 'group' && selectedUsers.length > 0" class="mb-4 flex flex-wrap gap-2">
+                        @foreach($users as $user)
+                            <template x-if="isSelected({{ $user->id }})">
+                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm">
+                                    {{ $user->name }}
+                                    <button @click="toggleUser({{ $user->id }})" class="hover:text-indigo-900 dark:hover:text-indigo-100">
+                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </span>
+                            </template>
+                        @endforeach
+                    </div>
+
+                    <!-- Liste des utilisateurs -->
+                    <div class="max-h-80 overflow-y-auto space-y-2">
+                        @forelse($users as $user)
+                            <template x-if="'{{ strtolower($user->name) }}'.includes(searchQuery.toLowerCase()) || searchQuery === ''">
+                                <!-- Pour conversation privée -->
+                                <div x-show="activeTab === 'private'">
+                                    <form action="{{ route('messages.create.private') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                        <button type="submit" 
+                                                class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition text-left">
+                                            <div class="relative">
+                                                <div class="size-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                                                    {{ $user->name[0] }}
+                                                </div>
+                                                <div class="absolute -bottom-0.5 -right-0.5 size-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="font-semibold text-zinc-900 dark:text-zinc-100">{{ $user->name }}</h4>
+                                                <p class="text-sm text-zinc-500 truncate">{{ $user->email }}</p>
+                                            </div>
+                                            <svg class="size-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
-                                <button type="submit" 
-                                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Démarrer la conversation
-                                </button>
+
+                                <!-- Pour groupe -->
+                                <div x-show="activeTab === 'group'">
+                                    <button @click="toggleUser({{ $user->id }})"
+                                            :class="isSelected({{ $user->id }}) ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-300 dark:border-indigo-700' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 border-transparent'"
+                                            class="w-full flex items-center gap-4 p-4 rounded-xl border-2 transition text-left">
+                                        <div class="relative">
+                                            <div class="size-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                                                {{ $user->name[0] }}
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-semibold text-zinc-900 dark:text-zinc-100">{{ $user->name }}</h4>
+                                            <p class="text-sm text-zinc-500 truncate">{{ $user->email }}</p>
+                                        </div>
+                                        <div :class="isSelected({{ $user->id }}) ? 'bg-indigo-600 border-indigo-600' : 'border-zinc-300 dark:border-zinc-600'"
+                                             class="size-6 rounded-full border-2 flex items-center justify-center">
+                                            <svg x-show="isSelected({{ $user->id }})" class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </div>
+                            </template>
+                        @empty
+                            <div class="text-center py-8">
+                                <p class="text-zinc-500">Aucun utilisateur disponible</p>
                             </div>
-                        </form>
+                        @endforelse
                     </div>
 
-                    <!-- Formulaire groupe -->
-                    <div x-show="conversationType === 'group'"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-4"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         class="space-y-6">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Nouveau groupe de discussion</h3>
+                    <!-- Bouton créer groupe -->
+                    <div x-show="activeTab === 'group'" class="mt-6">
                         <form action="{{ route('messages.create.group') }}" method="POST">
                             @csrf
-                            <div class="space-y-4">
-                                <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Nom du groupe
-                                    </label>
-                                    <input type="text" 
-                                           id="name" 
-                                           name="name" 
-                                           class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                                           required>
-                                </div>
-                                <div>
-                                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Description (optionnelle)
-                                    </label>
-                                    <textarea id="description" 
-                                              name="description" 
-                                              rows="3" 
-                                              class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-                                </div>
-                                <div>
-                                    <label for="user_ids" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Participants
-                                    </label>
-                                    <select id="user_ids" 
-                                            name="user_ids[]" 
-                                            multiple 
-                                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
-                                            required>
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                        Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs participants
-                                    </p>
-                                </div>
-                                <button type="submit" 
-                                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Créer le groupe
-                                </button>
-                            </div>
+                            <input type="hidden" name="name" :value="groupName">
+                            @foreach($users as $user)
+                                <template x-if="isSelected({{ $user->id }})">
+                                    <input type="hidden" name="user_ids[]" value="{{ $user->id }}">
+                                </template>
+                            @endforeach
+                            <button type="submit"
+                                    :disabled="selectedUsers.length < 1 || !groupName.trim()"
+                                    class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition">
+                                <span x-text="selectedUsers.length > 0 ? `Créer le groupe (${selectedUsers.length + 1} membres)` : 'Sélectionnez des membres'"></span>
+                            </button>
                         </form>
                     </div>
                 </div>
+            </div>
+
+            <!-- Retour -->
+            <div class="text-center mt-6">
+                <a href="{{ route('messages.index') }}" class="inline-flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Retour à la messagerie
+                </a>
             </div>
         </div>
     </div>

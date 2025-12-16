@@ -20,7 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+use App\Http\Controllers\DashboardController;
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -60,12 +62,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('contacts/export', [ContactController::class, 'export'])->name('contacts.export');
     Route::post('contacts/bulk-destroy', [ContactController::class, 'bulkDestroy'])->name('contacts.bulkDestroy');
 
-    //Products
+
+    // Products & Categories
+    Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+    Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.updateStock');
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
 
     //facts
     Route::apiResource('informations', InformationController::class);
+
 
 });
 
@@ -88,8 +94,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 
     // Routes pour les contacts
-    Route::get('/contacts/information', [ContactController::class, 'information'])
-        ->name('contacts.information');
     Route::resource('contacts', ContactController::class);
     
    
@@ -106,14 +110,8 @@ Route::middleware(['auth'])->group(function () {
         
 
     
-    Route::get('/interactions', [InteractionController::class, 'all'])
-        ->name('interactions.all');
-    
-    Route::get('/interactions/modern', [InteractionController::class, 'modern'])
-        ->name('interactions.modern');
-    
-    Route::get('/interactions/dashboard', [InteractionController::class, 'dashboard'])
-        ->name('interactions.dashboard');
+    Route::get('/interactions', [InteractionController::class, 'globalIndex'])
+        ->name('interactions.index');
 
     Route::resource('types-interactions', TypeInteractionController::class);
 

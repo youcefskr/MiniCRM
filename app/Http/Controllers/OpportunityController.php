@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Opportunity;
 use App\Models\Contact;
 use App\Models\User;
+use App\Models\Product;
+use App\Notifications\OpportunityDueNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,6 +28,7 @@ class OpportunityController extends Controller
 
         $groupedOpportunities = $opportunities->groupBy('stage');
         $contacts = Contact::all();
+        $products = Product::active()->with('category')->get();
 
         $stats = [
             'total' => $opportunities->count(),
@@ -39,7 +42,7 @@ class OpportunityController extends Controller
             })
         ];
 
-        return view('opportunities.index', compact('opportunities', 'groupedOpportunities', 'stages', 'contacts', 'stats'));
+        return view('opportunities.index', compact('opportunities', 'groupedOpportunities', 'stages', 'contacts', 'products', 'stats'));
     }
 
     public function store(Request $request)
@@ -54,16 +57,49 @@ class OpportunityController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $validated['user_id'] = Auth::id(); // Assign to current user by default, or add field to select user
+        $validated['user_id'] = Auth::id();
 
-        Opportunity::create($validated);
+        $opportunity = Opportunity::create($validated);
+
+        // Associer les produits si fournis
+        if ($request->has('products') && is_array($request->products)) {
+            foreach ($request->products as $productData) {
+                if (!empty($productData['product_id']) && !empty($productData['quantity'])) {
+                    $product = Product::find($productData['product_id']);
+                    if ($product) {
+                        $unitPrice = $productData['unit_price'] ?? $product->price;
+                        $quantity = $productData['quantity'];
+                        $discount = $productData['discount'] ?? 0;
+                        $totalPrice = ($unitPrice * $quantity) * (1 - ($discount / 100));
+
+                        $opportunity->products()->attach($product->id, [
+                            'quantity' => $quantity,
+                            'unit_price' => $unitPrice,
+                            'discount' => $discount,
+                            'total_price' => $totalPrice,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // Notification immédiate si due aujourd'hui ou demain
+        if ($opportunity->expected_close_date && $opportunity->user) {
+            if ($opportunity->expected_close_date->isToday()) {
+                $opportunity->user->notify(new OpportunityDueNotification($opportunity, 'today'));
+            } elseif ($opportunity->expected_close_date->isTomorrow()) {
+                $opportunity->user->notify(new OpportunityDueNotification($opportunity, 'tomorrow'));
+            }
+        }
 
         return redirect()->route('opportunities.index')->with('success', 'Opportunité créée avec succès.');
     }
 
     public function edit(Opportunity $opportunity)
     {
+        $opportunity->load('products.category');
         $contacts = Contact::all();
+        $products = Product::active()->with('category')->get();
         $stages = [
             'new' => 'Prospection',
             'qualification' => 'Qualification',
@@ -73,7 +109,7 @@ class OpportunityController extends Controller
             'lost' => 'Perdue'
         ];
 
-        return view('opportunities.edit', compact('opportunity', 'contacts', 'stages'));
+        return view('opportunities.edit', compact('opportunity', 'contacts', 'products', 'stages'));
     }
 
     public function update(Request $request, Opportunity $opportunity)
@@ -90,7 +126,53 @@ class OpportunityController extends Controller
 
         $opportunity->update($validated);
 
+        // Synchroniser les produits
+        $productsToSync = [];
+        if ($request->has('products') && is_array($request->products)) {
+            foreach ($request->products as $productData) {
+                if (!empty($productData['product_id']) && !empty($productData['quantity'])) {
+                    $product = Product::find($productData['product_id']);
+                    if ($product) {
+                        $unitPrice = $productData['unit_price'] ?? $product->price;
+                        $quantity = $productData['quantity'];
+                        $discount = $productData['discount'] ?? 0;
+                        $totalPrice = ($unitPrice * $quantity) * (1 - ($discount / 100));
+
+                        $productsToSync[$product->id] = [
+                            'quantity' => $quantity,
+                            'unit_price' => $unitPrice,
+                            'discount' => $discount,
+                            'total_price' => $totalPrice,
+                        ];
+                    }
+                }
+            }
+        }
+        $opportunity->products()->sync($productsToSync);
+
+        // Notification immédiate si due aujourd'hui ou demain
+        if ($opportunity->expected_close_date && $opportunity->user) {
+            if ($opportunity->expected_close_date->isToday()) {
+                $opportunity->user->notify(new OpportunityDueNotification($opportunity, 'today'));
+            } elseif ($opportunity->expected_close_date->isTomorrow()) {
+                $opportunity->user->notify(new OpportunityDueNotification($opportunity, 'tomorrow'));
+            }
+        }
+
         return redirect()->route('opportunities.index')->with('success', 'Opportunité mise à jour.');
+    }
+
+
+    public function show(Opportunity $opportunity)
+    {
+        $opportunity->load(['contact', 'user', 'products.category']);
+        
+        $stats = [
+            'products_count' => $opportunity->products->count(),
+            'products_total' => $opportunity->products->sum('pivot.total_price'),
+        ];
+        
+        return view('opportunities.show', compact('opportunity', 'stats'));
     }
 
     public function destroy(Opportunity $opportunity)

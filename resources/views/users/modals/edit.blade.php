@@ -1,9 +1,8 @@
 <div x-show="showEditModal" 
      x-cloak
-     class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4"
-     aria-labelledby="modal-title">
+     class="fixed inset-0 z-50 flex items-center justify-center p-4">
     
-    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm"
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"
          x-show="showEditModal"
          x-transition:enter="ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -14,115 +13,124 @@
          @click="showEditModal = false">
     </div>
 
-    <div class="relative bg-white w-full max-w-2xl rounded-xl shadow-2xl"
+    <div class="relative bg-white dark:bg-zinc-900 w-full max-w-lg rounded-2xl shadow-2xl"
          x-show="showEditModal"
          x-transition:enter="ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
          x-transition:leave="ease-in duration-200"
          x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95"
-         @click.away="showEditModal = false">
+         x-transition:leave-end="opacity-0 scale-95">
         
-        <form x-bind:action="'/admin/users/' + selectedUser?.id" 
-              method="POST" 
-              x-data="{ 
-                  password: '',
-                  password_confirmation: '',
-                  checkPasswords() {
-                      if (!this.password) return true;
-                      return this.password === this.password_confirmation;
-                  }
-              }">
-            @csrf
-            @method('PUT')
-            <div class="p-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-6">
-                    Modifier l'utilisateur
-                </h3>
+        <template x-if="selectedUser">
+            <form :action="`{{ url('/admin/users') }}/${selectedUser.id}`" method="POST" x-data="{ 
+                password: '',
+                password_confirmation: '',
+                showPassword: false
+            }">
+                @csrf
+                @method('PUT')
+                
+                <!-- Header -->
+                <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
+                    <div class="flex items-center gap-4">
+                        <div class="size-14 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-xl shadow-lg" 
+                             x-text="selectedUser.name?.charAt(0)?.toUpperCase()">
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">Modifier l'utilisateur</h3>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400" x-text="selectedUser.email"></p>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="space-y-4">
+                <!-- Body -->
+                <div class="p-6 space-y-5">
+                    <!-- Nom -->
                     <div>
-                        <label for="edit_name" class="block text-sm font-medium text-gray-700">Nom</label>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Nom complet</label>
                         <input type="text" 
                                name="name" 
-                               id="edit_name" 
                                required
-                               x-model="selectedUser?.name"
-                               class="mt-1 block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base">
+                               :value="selectedUser.name"
+                               class="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-zinc-100">
                     </div>
 
+                    <!-- Email -->
                     <div>
-                        <label for="edit_email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Adresse email</label>
                         <input type="email" 
                                name="email" 
-                               id="edit_email" 
                                required
-                               x-model="selectedUser?.email"
-                               class="mt-1 block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base">
+                               :value="selectedUser.email"
+                               class="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-zinc-100">
                     </div>
 
+                    <!-- Séparateur -->
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-zinc-200 dark:border-zinc-700"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-3 bg-white dark:bg-zinc-900 text-zinc-500">Mot de passe (optionnel)</span>
+                        </div>
+                    </div>
+
+                    <!-- Mot de passe -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Nouveau mot de passe</label>
+                            <input :type="showPassword ? 'text' : 'password'" 
+                                   name="password" 
+                                   x-model="password"
+                                   minlength="8"
+                                   placeholder="••••••••"
+                                   class="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-zinc-100">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Confirmer</label>
+                            <input :type="showPassword ? 'text' : 'password'" 
+                                   name="password_confirmation" 
+                                   x-model="password_confirmation"
+                                   minlength="8"
+                                   placeholder="••••••••"
+                                   class="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-zinc-100">
+                        </div>
+                    </div>
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" x-model="showPassword" class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500">
+                        <span class="text-sm text-zinc-600 dark:text-zinc-400">Afficher les mots de passe</span>
+                    </label>
+
+                    <!-- Rôle -->
                     <div>
-                        <label for="edit_password" class="block text-sm font-medium text-gray-700">
-                            Nouveau mot de passe (laisser vide pour ne pas modifier)
-                        </label>
-                        <input type="password" 
-                               name="password" 
-                               id="edit_password"
-                               x-model="password"
-                               minlength="8"
-                               class="mt-1 block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base">
-                    </div>
-
-                    <div class="mt-2">
-                        <label for="edit_password_confirmation" class="block text-sm font-medium text-gray-700">
-                            Confirmer le nouveau mot de passe
-                        </label>
-                        <input type="password" 
-                               name="password_confirmation" 
-                               id="edit_password_confirmation"
-                               x-model="password_confirmation"
-                               minlength="8"
-                               class="mt-1 block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base">
-                    </div>
-
-                    <div class="mt-2 flex items-center">
-                        <input type="checkbox" id="showEditPassword" class="mr-2" onclick="
-                            document.getElementById('edit_password').type = this.checked ? 'text' : 'password';
-                            document.getElementById('edit_password_confirmation').type = this.checked ? 'text' : 'password';
-                        ">
-                        <label for="showEditPassword" class="text-sm text-gray-700">Afficher le mot de passe</label>
-                    </div>
-
-                    <div>
-                        <label for="edit_roles" class="block text-sm font-medium text-gray-700 mb-2">Rôles</label>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Rôle</label>
                         <select name="roles[]" 
-                                id="edit_roles" 
                                 required
-                                class="mt-1 block w-full h-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base">
-                            <option value="" disabled>Choisir un rôle</option>
+                                class="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-zinc-100">
                             @foreach($roles as $role)
-                                <option value="{{ $role->name }}"
-                                        x-bind:selected="selectedUser?.roles?.some(r => r.name === '{{ $role->name }}')">
+                                <option value="{{ $role->name }}" 
+                                        :selected="selectedUser.roles?.some(r => r.name === '{{ $role->name }}')">
                                     {{ ucfirst($role->name) }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-            </div>
 
-            <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex justify-end space-x-3">
-                <button type="button" @click="showEditModal = false"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                    Annuler
-                </button>
-                <button type="submit"
-                        x-bind:disabled="!checkPasswords()"
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Mettre à jour
-                </button>
-            </div>
-        </form>
+                <!-- Footer -->
+                <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-3">
+                    <button type="button" @click="showEditModal = false"
+                            class="px-5 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl hover:from-indigo-600 hover:to-purple-700 shadow-lg transition">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </template>
     </div>
 </div>

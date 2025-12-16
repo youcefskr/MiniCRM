@@ -19,6 +19,10 @@ class Task extends Model
         'contact_id',
     ];
 
+    protected $casts = [
+        'due_date' => 'date',
+    ];
+
     /**
      * Une tâche appartient à un utilisateur (assigné).
      */

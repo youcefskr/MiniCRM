@@ -19,7 +19,7 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Tableau de bord') }}</flux:navlist.item>
                     <flux:navlist.item icon="currency-dollar" :href="route('opportunities.index')" :current="request()->routeIs('opportunities.*')" wire:navigate>{{ __('Opportunités') }}</flux:navlist.item>
                     <flux:navlist.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>{{ __('Tâches') }}</flux:navlist.item>
-                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('interactions.dashboard')" :current="request()->routeIs('interactions.dashboard')" wire:navigate>{{ __('Interactions') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('interactions.index')" :current="request()->routeIs('interactions.*')" wire:navigate>{{ __('Interactions') }}</flux:navlist.item>
                     <flux:navlist.item icon="chat-bubble-left-ellipsis" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>{{ __('Messagerie') }}</flux:navlist.item>
                     
                     <flux:navlist.group x-data="{ open: false }" class="relative">
@@ -49,6 +49,8 @@
                         @can('gere type interaction')
                             <flux:navlist.item icon="list-bullet" :href="route('types-interactions.index')" :current="request()->routeIs('types-interactions.*')" wire:navigate>{{ __('Types d\'interactions') }}</flux:navlist.item>
                         @endcan
+
+                        <flux:navlist.item icon="cube" :href="route('admin.products.index')" :current="request()->routeIs('admin.products.*') || request()->routeIs('admin.categories.*')" wire:navigate>{{ __('Produits & Catégories') }}</flux:navlist.item>
                     </flux:navlist.group>
                 @endif
             </flux:navlist>
@@ -99,7 +101,7 @@
                 
                 <flux:spacer />
 
-                <flux:button icon="bell" variant="ghost" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200" />
+                <livewire:notifications-menu />
                 <flux:button icon="question-mark-circle" variant="ghost" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hidden lg:flex" />
 
                 <!-- Mobile Profile Dropdown -->
