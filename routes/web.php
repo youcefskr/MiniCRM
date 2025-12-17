@@ -20,7 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+use App\Http\Controllers\DashboardController;
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -60,12 +62,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('contacts/export', [ContactController::class, 'export'])->name('contacts.export');
     Route::post('contacts/bulk-destroy', [ContactController::class, 'bulkDestroy'])->name('contacts.bulkDestroy');
 
-    //Products
+
+    // Products & Categories
+    Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+    Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.updateStock');
     Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
 
     //facts
     Route::apiResource('informations', InformationController::class);
+
+    // Activity Logs
+    Route::get('activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('activity-logs/export', [\App\Http\Controllers\ActivityLogController::class, 'export'])->name('activity-logs.export');
+    Route::get('activity-logs/security', [\App\Http\Controllers\ActivityLogController::class, 'securityDashboard'])->name('activity-logs.security');
+    Route::get('activity-logs/user/{user}', [\App\Http\Controllers\ActivityLogController::class, 'userHistory'])->name('activity-logs.user-history');
+    Route::get('activity-logs/model', [\App\Http\Controllers\ActivityLogController::class, 'modelHistory'])->name('activity-logs.model-history');
+    Route::get('activity-logs/{activityLog}', [\App\Http\Controllers\ActivityLogController::class, 'show'])->name('activity-logs.show');
 
 });
 
@@ -75,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('profile.edit');
     Volt::route('settings/password', 'settings.password')->name('password.edit');
     Volt::route('settings/appearance', 'settings.appearance')->name('appearance.edit');
+    Volt::route('settings/language', 'settings.language')->name('language.edit');
 
     Volt::route('settings/two-factor', 'settings.two-factor')
         ->middleware(
@@ -88,8 +102,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 
     // Routes pour les contacts
-    Route::get('/contacts/information', [ContactController::class, 'information'])
-        ->name('contacts.information');
     Route::resource('contacts', ContactController::class);
     
    
@@ -106,14 +118,8 @@ Route::middleware(['auth'])->group(function () {
         
 
     
-    Route::get('/interactions', [InteractionController::class, 'all'])
-        ->name('interactions.all');
-    
-    Route::get('/interactions/modern', [InteractionController::class, 'modern'])
-        ->name('interactions.modern');
-    
-    Route::get('/interactions/dashboard', [InteractionController::class, 'dashboard'])
-        ->name('interactions.dashboard');
+    Route::get('/interactions', [InteractionController::class, 'globalIndex'])
+        ->name('interactions.index');
 
     Route::resource('types-interactions', TypeInteractionController::class);
 
@@ -140,7 +146,24 @@ Route::middleware(['auth'])->group(function () {
         return view('messenger.index');
     })->name('messenger');
 
+    // Subscriptions
+    Route::resource('subscriptions', \App\Http\Controllers\SubscriptionController::class);
+    Route::post('/subscriptions/{subscription}/pause', [\App\Http\Controllers\SubscriptionController::class, 'pause'])->name('subscriptions.pause');
+    Route::post('/subscriptions/{subscription}/resume', [\App\Http\Controllers\SubscriptionController::class, 'resume'])->name('subscriptions.resume');
+    Route::post('/subscriptions/{subscription}/cancel', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('/subscriptions/{subscription}/renew', [\App\Http\Controllers\SubscriptionController::class, 'renew'])->name('subscriptions.renew');
+    Route::get('/subscriptions/{subscription}/generate-invoice', [\App\Http\Controllers\SubscriptionController::class, 'generateInvoice'])->name('subscriptions.generate-invoice');
+    Route::get('/subscriptions-export', [\App\Http\Controllers\SubscriptionController::class, 'export'])->name('subscriptions.export');
 
+    // Invoices
+    Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
+    Route::post('/invoices/{invoice}/send', [\App\Http\Controllers\InvoiceController::class, 'send'])->name('invoices.send');
+    Route::post('/invoices/{invoice}/mark-as-paid', [\App\Http\Controllers\InvoiceController::class, 'markAsPaid'])->name('invoices.mark-as-paid');
+    Route::post('/invoices/{invoice}/add-payment', [\App\Http\Controllers\InvoiceController::class, 'addPayment'])->name('invoices.add-payment');
+    Route::post('/invoices/{invoice}/cancel', [\App\Http\Controllers\InvoiceController::class, 'cancel'])->name('invoices.cancel');
+    Route::get('/invoices/{invoice}/download', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('invoices.download');
+    Route::get('/invoices/{invoice}/duplicate', [\App\Http\Controllers\InvoiceController::class, 'duplicate'])->name('invoices.duplicate');
+    Route::get('/invoices-export', [\App\Http\Controllers\InvoiceController::class, 'export'])->name('invoices.export');
     
 });
 

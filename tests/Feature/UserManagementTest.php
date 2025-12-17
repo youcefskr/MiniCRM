@@ -22,7 +22,7 @@ class UserManagementTest extends TestCase
         parent::setUp();
         
         
-        $this->role = Role::create(['name' => 'admin']);
+        $this->role = Role::firstOrCreate(['name' => 'admin']);
         
         
         $this->admin = User::factory()->create();
@@ -124,7 +124,7 @@ class UserManagementTest extends TestCase
     /** @test */
     public function admin_cannot_delete_super_admin()
     {
-        $superAdminRole = Role::create(['name' => 'super-admin']);
+        $superAdminRole = Role::firstOrCreate(['name' => 'super-admin']);
         $superAdmin = User::factory()->create();
         $superAdmin->assignRole('super-admin');
 

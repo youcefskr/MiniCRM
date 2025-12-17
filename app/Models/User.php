@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'locale',
     ];
 
     /**
@@ -64,8 +65,31 @@ class User extends Authenticatable implements MustVerifyEmail
     
     // Pas besoin de définir la relation roles() car elle est fournie par le trait HasRoles
     public function tasks()
-{
-    return $this->hasMany(Task::class);
-}
-      
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the subscriptions managed by the user.
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the invoices created by the user.
+     */
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get the contacts of the user.
+     */
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
+    }
 }

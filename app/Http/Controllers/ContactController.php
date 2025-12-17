@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
-use App\Notifications\ContactCreated;
+use App\Notifications\NewContactNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -66,8 +66,11 @@ class ContactController extends Controller
             }
 
             // Envoi de la notification
-            Notification::route('mail', $contact->email)
-                ->notify(new ContactCreated($contact));
+            // Notification::route('mail', $contact->email)
+            //     ->notify(new ContactCreated($contact));
+            
+            // Notifier l'utilisateur connecté (pour tester)
+            Auth::user()->notify(new NewContactNotification($contact));
 
             return redirect()
                 ->route('contacts.index')
@@ -117,28 +120,6 @@ class ContactController extends Controller
     public function show(Contact $contact)
     {
         return view('contacts.show', compact('contact'));
-    }
-
-    public function information(Request $request)
-    {
-        $search = $request->input('search');
-        
-        $contacts = Contact::with('user')
-            ->when($search, function($query) use ($search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('nom', 'like', "%{$search}%")
-                      ->orWhere('prenom', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('telephone', 'like', "%{$search}%")
-                      ->orWhere('entreprise', 'like', "%{$search}%")
-                      ->orWhere('adresse', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('nom')
-            ->paginate(12)
-            ->withQueryString();
-            
-        return view('contacts.information', compact('contacts', 'search'));
     }
 
     /**

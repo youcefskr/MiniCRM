@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\TaskDueNotification;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -54,9 +55,6 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        // Supprimer ou commenter cette ligne
-        // dd($request->all());
-        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -67,7 +65,16 @@ class TaskController extends Controller
             'contact_id' => 'nullable|exists:contacts,id',
         ]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        // Notification immédiate si due aujourd'hui ou demain
+        if ($task->due_date && $task->user) {
+            if ($task->due_date->isToday()) {
+                $task->user->notify(new TaskDueNotification($task, 'today'));
+            } elseif ($task->due_date->isTomorrow()) {
+                $task->user->notify(new TaskDueNotification($task, 'tomorrow'));
+            }
+        }
 
         return redirect()->route('tasks.index')->with('success', 'Tâche créée avec succès.');
     }
@@ -88,6 +95,15 @@ class TaskController extends Controller
         ]);
 
         $task->update($validated);
+
+        // Notification immédiate si due aujourd'hui ou demain
+        if ($task->due_date && $task->user) {
+            if ($task->due_date->isToday()) {
+                $task->user->notify(new TaskDueNotification($task, 'today'));
+            } elseif ($task->due_date->isTomorrow()) {
+                $task->user->notify(new TaskDueNotification($task, 'tomorrow'));
+            }
+        }
 
         return redirect()->route('tasks.index')->with('success', 'Tâche mise à jour avec succès.');
     }

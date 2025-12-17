@@ -21,9 +21,9 @@ class RolePermissionManagementTest extends TestCase
     {
         parent::setUp();
         
-        // Créer un rôle admin avec toutes les permissions
-        $adminRole = Role::create(['name' => 'admin']);
-        $permission = Permission::create(['name' => 'manage role and permissions']);
+        // Créer un rôle admin avec toutes les permissions (use firstOrCreate to avoid conflicts)
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $permission = Permission::firstOrCreate(['name' => 'manage role and permissions']);
         
         // Créer un utilisateur admin
         $this->admin = User::factory()->create();
@@ -60,7 +60,7 @@ class RolePermissionManagementTest extends TestCase
     /** @test */
     public function admin_cannot_create_duplicate_role()
     {
-        Role::create(['name' => 'existing-role']);
+        Role::firstOrCreate(['name' => 'existing-role']);
 
         $roleData = [
             'name' => 'existing-role',
@@ -75,7 +75,7 @@ class RolePermissionManagementTest extends TestCase
     /** @test */
     public function admin_can_update_role()
     {
-        $role = Role::create(['name' => 'old-role']);
+        $role = Role::firstOrCreate(['name' => 'old-role']);
 
         $updateData = [
             'name' => 'updated-role',
@@ -93,7 +93,7 @@ class RolePermissionManagementTest extends TestCase
     /** @test */
     public function admin_cannot_delete_protected_roles()
     {
-        $protectedRole = Role::create(['name' => 'super-admin']);
+        $protectedRole = Role::firstOrCreate(['name' => 'super-admin']);
 
         $this->actingAs($this->admin)
             ->delete(route('admin.roles.destroy', $protectedRole))
@@ -121,7 +121,7 @@ class RolePermissionManagementTest extends TestCase
     /** @test */
     public function admin_can_delete_permission()
     {
-        $permission = Permission::create(['name' => 'test-permission']);
+        $permission = Permission::firstOrCreate(['name' => 'test-permission']);
 
         $this->actingAs($this->admin)
             ->delete(route('admin.permissions.destroy', $permission))

@@ -41,7 +41,31 @@ class Contact extends Model
         return $this->hasMany(Interaction::class);
     }
     public function tasks()
-{
-    return $this->hasMany(Task::class);
-}
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the subscriptions for the contact.
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the invoices for the contact.
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get the opportunities for the contact.
+     */
+    public function opportunities(): HasMany
+    {
+        return $this->hasMany(Opportunity::class);
+    }
 }

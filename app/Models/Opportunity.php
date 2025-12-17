@@ -37,4 +37,11 @@ class Opportunity extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'opportunity_product')
+            ->withPivot(['quantity', 'unit_price', 'discount', 'total_price'])
+            ->withTimestamps();
+    }
 }
