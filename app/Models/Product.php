@@ -44,6 +44,24 @@ class Product extends Model
             ->withTimestamps();
     }
 
+    /**
+     * Get the subscriptions that include this product.
+     */
+    public function subscriptions()
+    {
+        return $this->belongsToMany(Subscription::class, 'subscription_product')
+            ->withPivot(['quantity', 'unit_price', 'discount'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the invoice items for this product.
+     */
+    public function invoiceItems()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

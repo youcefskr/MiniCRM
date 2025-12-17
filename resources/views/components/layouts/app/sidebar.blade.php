@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ App\Http\Middleware\SetLocale::isRtl() ? 'rtl' : 'ltr' }}" class="dark">
     <head>
         @include('partials.head')
     </head>
@@ -15,17 +15,19 @@
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="Plateforme" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Tableau de bord') }}</flux:navlist.item>
-                    <flux:navlist.item icon="currency-dollar" :href="route('opportunities.index')" :current="request()->routeIs('opportunities.*')" wire:navigate>{{ __('Opportunités') }}</flux:navlist.item>
-                    <flux:navlist.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>{{ __('Tâches') }}</flux:navlist.item>
-                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('interactions.index')" :current="request()->routeIs('interactions.*')" wire:navigate>{{ __('Interactions') }}</flux:navlist.item>
-                    <flux:navlist.item icon="chat-bubble-left-ellipsis" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>{{ __('Messagerie') }}</flux:navlist.item>
+                <flux:navlist.group :heading="__('common.platform')" class="grid">
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('common.dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="currency-dollar" :href="route('opportunities.index')" :current="request()->routeIs('opportunities.*')" wire:navigate>{{ __('common.opportunities') }}</flux:navlist.item>
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>{{ __('common.tasks') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chat-bubble-left-right" :href="route('interactions.index')" :current="request()->routeIs('interactions.*')" wire:navigate>{{ __('common.interactions') }}</flux:navlist.item>
+                    <flux:navlist.item icon="arrow-path" :href="route('subscriptions.index')" :current="request()->routeIs('subscriptions.*')" wire:navigate>{{ __('common.subscriptions') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('invoices.index')" :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('common.invoices') }}</flux:navlist.item>
+                    <flux:navlist.item icon="chat-bubble-left-ellipsis" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>{{ __('common.messaging') }}</flux:navlist.item>
                     
                     <flux:navlist.group x-data="{ open: false }" class="relative">
                         <flux:navlist.item @click="open = !open" icon="users" class="cursor-pointer">
                             <div class="flex items-center justify-between w-full">
-                                {{ __('Contacts') }}
+                                {{ __('common.contacts') }}
                                 <flux:icon.chevron-down class="size-4 transition-transform" ::class="{ 'rotate-180': open }" />
                             </div>
                         </flux:navlist.item>
@@ -37,20 +39,22 @@
                 </flux:navlist.group>
 
                 @if(auth()->user()->can('manage users') || auth()->user()->can('manage role and permissions') || auth()->user()->can('gere type interaction'))
-                    <flux:navlist.group heading="Administration" class="grid mt-4">
+                    <flux:navlist.group :heading="__('common.administration')" class="grid mt-4">
                         @can('manage users')
-                            <flux:navlist.item icon="user-group" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>{{ __('Utilisateurs') }}</flux:navlist.item>
+                            <flux:navlist.item icon="user-group" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>{{ __('common.users') }}</flux:navlist.item>
                         @endcan
 
                         @can('manage role and permissions')
-                            <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')" :current="request()->routeIs('admin.roles.*')" wire:navigate>{{ __('Rôles & Permissions') }}</flux:navlist.item>
+                            <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')" :current="request()->routeIs('admin.roles.*')" wire:navigate>{{ __('common.roles_permissions') }}</flux:navlist.item>
                         @endcan
 
                         @can('gere type interaction')
-                            <flux:navlist.item icon="list-bullet" :href="route('types-interactions.index')" :current="request()->routeIs('types-interactions.*')" wire:navigate>{{ __('Types d\'interactions') }}</flux:navlist.item>
+                            <flux:navlist.item icon="list-bullet" :href="route('types-interactions.index')" :current="request()->routeIs('types-interactions.*')" wire:navigate>{{ __('common.interaction_types') }}</flux:navlist.item>
                         @endcan
 
-                        <flux:navlist.item icon="cube" :href="route('admin.products.index')" :current="request()->routeIs('admin.products.*') || request()->routeIs('admin.categories.*')" wire:navigate>{{ __('Produits & Catégories') }}</flux:navlist.item>
+                        <flux:navlist.item icon="cube" :href="route('admin.products.index')" :current="request()->routeIs('admin.products.*') || request()->routeIs('admin.categories.*')" wire:navigate>{{ __('common.products_categories') }}</flux:navlist.item>
+                        
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('admin.activity-logs.index')" :current="request()->routeIs('admin.activity-logs.*')" wire:navigate>{{ __('common.activity_log') }}</flux:navlist.item>
                     </flux:navlist.group>
                 @endif
             </flux:navlist>
@@ -97,10 +101,11 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <div class="flex items-center gap-4 w-full">
-                <flux:input icon="magnifying-glass" placeholder="Rechercher..." class="max-w-sm hidden lg:block" />
+                <flux:input icon="magnifying-glass" :placeholder="__('common.search')" class="max-w-sm hidden lg:block" />
                 
                 <flux:spacer />
 
+                <livewire:language-switcher />
                 <livewire:notifications-menu />
                 <flux:button icon="question-mark-circle" variant="ghost" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hidden lg:flex" />
 
